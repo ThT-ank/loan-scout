@@ -32,15 +32,26 @@ def select_dropdown_option(driver, dropdown_index, option_text):
             option.click()
             break
 
-def click_next_step(driver):
-    button = driver.find_element(By.XPATH, "//button[text()='Étape suivante']")
-    button.click()
+def click_next_step(driver, texte="Étape suivante", timeout=10):
+    """
+    Clique sur le premier <a> ou <button> dont le texte correspond à 'texte'.
+    """
+    xpath = (
+        f"//a[normalize-space(text())='{texte}'] | "
+        f"//button[normalize-space(text())='{texte}']"
+    )
+    element = WebDriverWait(driver, timeout).until(
+        EC.element_to_be_clickable((By.XPATH, xpath))
+    )
+    element.click()
 
 def process_BoursoBank_simulation(loanDuration):
 
     # Configurer les options pour Chrome
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # Mode sans tête
+    chrome_options.add_argument("--log-level=3")  # Réduit les logs Chrome
+
     chrome_options.add_argument("--no-sandbox")  # Nécessaire dans Docker
     chrome_options.add_argument("--disable-gpu")  # Option pour éviter certains bugs graphiques
 
@@ -59,6 +70,8 @@ def process_BoursoBank_simulation(loanDuration):
         bouton = driver.find_element(By.XPATH, f"//span[text()='{texte_bouton}']")
         bouton.click()
         time.sleep(0.2)
+
+    click_next_step(driver)
 
     # Remplir les champs
     for input_id, value in list(input_data.items())[:6]:  # Sélection des 3 premiers éléments
@@ -89,6 +102,7 @@ def process_BoursoBank_simulation(loanDuration):
     driver.implicitly_wait(10)
     rounded_card = driver.find_element(By.CLASS_NAME, "simulation-card")
     card_text = driver.execute_script("return arguments[0].innerText;", rounded_card)
+
     driver.quit()
     
 
