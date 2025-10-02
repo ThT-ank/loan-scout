@@ -94,22 +94,29 @@ def extract_loan_data(data, loanDuration):
     # Dictionnaire pour stocker les résultats
     resultats = {'Durée' : f"{loanDuration}"}
 
+    mots_remise = (
+        r"remise(?:\(s\)|s)?"
+        r"|réduction(?:\(s\)|s)?"
+        r"|diminution(?:\(s\)|s)?"
+        r"|rabais"
+    )
+
     # Expressions régulières pour extraire les valeurs numériques
     patterns = {
-        "Capital": (r"Capital emprunté\s+([\d\s]+) €", " €", int),
-        "Taux n. fixe": (r"Taux standard\s+([\d,]+) %", " %", float),
-        "Remise": (r"Remise écoresponsable\s+([-\d,]+) %", " %", float),
-        "Taux ap. remise": (r"Taux après remise\(s\)\s+([\d,]+) %", " %", float),
-        "Mensualité av. remise": (r"Mensualité standard\s+([\d\s,]+) €", " €", float),
-        "Mensualité ap. remise": (r"Mensualité après remise\(s\)\s+([\d\s,]+) €", " €", float),
-        "Assurance": (r"assurance\s+([\d\s,]+) €/mois", " €", int),
-        "Économies": (r"Economies réalisées\s+([\d\s]+) €", " €", float),
-        "Dossier": (r"Frais de dossier\s+([\d\s]+) €", " €", int)
+        "Capital": (r"capital emprunt[ée]\s*([\d\s]+) €", " €", int),
+        "Taux n. fixe": (r"taux standard\s*([\d,]+) %", " %", float),
+        "Remise": (rf"(?:{mots_remise})\s*[ée]co[-]?responsable\s*([-\d,]+)\s*%", " %", float),
+        "Taux ap. remise": (rf"taux apr[èe]s\s*(?:{mots_remise})\s*([\d\s,]+)\s*%", " %", float),
+        "Mensualité av. remise": (r"mensualit[ée] standard\s*([\d\s,]+) €", " €", float),
+        "Mensualité ap. remise": (rf"mensualit[ée] apr[èe]s\s*(?:{mots_remise})\s*([\d\s,]+)\s*€", " €", float),
+        "Assurance": (r"assurance\s*([\d\s,]+) €/mois", " €", float),
+        "Économies": (rf"(?:{mots_remise})\s*[ée]co[-]?responsable\s*([\d\s]+)\s*€", " €", int),
+        "Dossier": (r"frais de dossier\s*([\d\s]+) €", " €", int)
     }
 
     # Parcourir les motifs et extraire les valeurs correspondantes
     for champ, (pattern, unite, type_conv) in patterns.items():
-        match = re.search(pattern, data)
+        match = re.search(pattern, data, re.IGNORECASE)
         if match:
             # Nettoyer la valeur en supprimant les espaces et en remplaçant la virgule par un point
             valeur = match.group(1).replace(" ", "").replace(",", ".")
