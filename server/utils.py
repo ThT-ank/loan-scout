@@ -94,18 +94,23 @@ def extract_loan_data(data, loanDuration):
     # Dictionnaire pour stocker les résultats
     resultats = {'Durée' : f"{loanDuration}"}
 
-    mots_remise = ["remise", "réduction", "rabais", "diminution"]
+    mots_remise = (
+        r"remise(?:\(s\)|s)?"
+        r"|réduction(?:\(s\)|s)?"
+        r"|diminution(?:\(s\)|s)?"
+        r"|rabais"
+    )
 
     # Expressions régulières pour extraire les valeurs numériques
     patterns = {
         "Capital": (r"capital emprunt[ée]\s*([\d\s]+) €", " €", int),
         "Taux n. fixe": (r"taux standard\s*([\d,]+) %", " %", float),
-        "Remise": (r"(?:{})\s*[ée]co[-]?responsable\s*([-\d,]+)\s*%".format("|".join(mots_remise)), " %", float),
-        "Taux ap. remise": (r"taux apr[èe]s(?:{})\s*([\d\s]+)\s*€".format("|".join(mots_remise)), " %", float),
+        "Remise": (rf"(?:{mots_remise})\s*[ée]co[-]?responsable\s*([-\d,]+)\s*%", " %", float),
+        "Taux ap. remise": (rf"taux apr[èe]s\s*(?:{mots_remise})\s*([\d\s,]+)\s*%", " %", float),
         "Mensualité av. remise": (r"mensualit[ée] standard\s*([\d\s,]+) €", " €", float),
-        "Mensualité ap. remise": (r"mensualit[ée] apr[èe]s(?:{})\s*([\d\s,]+)\s*€".format("|".join(mots_remise)), " €", float),
-        "Assurance": (r"assurance\s*([\d\s,]+) €/mois", " €", int),
-        "Économies": (r"economies r[ée]alis[ée]es\s*([\d\s]+) €", " €", float),
+        "Mensualité ap. remise": (rf"mensualit[ée] apr[èe]s\s*(?:{mots_remise})\s*([\d\s,]+)\s*€", " €", float),
+        "Assurance": (r"assurance\s*([\d\s,]+) €/mois", " €", float),
+        "Économies": (rf"(?:{mots_remise})\s*[ée]co[-]?responsable\s*([\d\s]+)\s*€", " €", int),
         "Dossier": (r"frais de dossier\s*([\d\s]+) €", " €", int)
     }
 
