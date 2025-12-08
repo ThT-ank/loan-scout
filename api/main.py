@@ -41,10 +41,10 @@ def run_simulation_for_duration(
     duration_years_string: str,
 ) -> Dict[str, Any]:
     """
-    Worker qui instancie un simulateur et lance la simulation.
+    Worker that runs the simulator for a given duration.
 
-    Extrait les données utiles et s'assure de libérer les ressources.
-    Retourne un dictionnaire normalisé (ou contenant 'error').
+    Extracts useful fields, ensures resources are released,
+    and returns a normalized dict (or an error dict).
     """
     logger.info("Starting simulation for {}", duration_years_string)
     simulator = None
@@ -76,33 +76,26 @@ def run_simulation_for_duration(
         return result_normalized
     except Exception as exc:  # pylint: disable=broad-exception-caught
         logger.exception(
-            "Erreur pendant la simulation pour {}: {}",
+            "Error during simulation for {}: {}",
             duration_years_string,
             exc,
         )
         return {"Durée": duration_years_string, "error": str(exc)}
     finally:
-        # Tenter de fermer proprement le driver si présent sur l'instance de simulateur
-        try:
-            if simulator is not None:
-                driver = getattr(simulator, "driver", None)
-                if driver is not None:
-                    try:
-                        driver.quit()
-                    except Exception:
-                        pass
-        except Exception:
-            pass
+        if simulator is not None:
+            driver = getattr(simulator, "driver", None)
+            if driver is not None:
+                driver.quit()
 
 
 @app.post("/simulate", response_model=List[Offer])
 def simulate(inp: SimulationInput) -> List[Offer]:
+    # pylint: disable=too-many-locals,too-many-branches,too-many-statements
     """
-    Appelle le collecteur Selenium Boursobank.
+    Call the Selenium Boursobank collector.
 
-    Retourne toutes les offres (liste d'`Offer`) pour les durées demandées :
-    soit une durée unique (`duration_years`), soit un intervalle
-    (`duration_years_min` .. `duration_years_max`).
+    Returns all offers for requested durations: either a single duration
+    (`duration_years`) or a range (`duration_years_min` .. `duration_years_max`).
     """
     logger.info(
         "/simulate amount={} duration_years={} min={} max={}",
@@ -112,16 +105,16 @@ def simulate(inp: SimulationInput) -> List[Offer]:
         getattr(inp, "duration_years_max", None),
     )
 
-    # Préparer inputs de simulation
+    # Prepare simulation inputs
     sim_inputs = SimulationInputs.default_values()
-    sim_inputs.montant_emprunt = str(inp.amount)
+    sim_inputs.loan_amount = str(inp.amount)
 
     if inp.borrower_number_1_age is not None:
-        sim_inputs.emprunteur1_age = str(inp.borrower_number_1_age)
+        sim_inputs.borrower1.age = str(inp.borrower_number_1_age)
     if inp.borrower_number_2_age is not None:
-        sim_inputs.emprunteur2_age = str(inp.borrower_number_2_age)
+        sim_inputs.borrower2.age = str(inp.borrower_number_2_age)
 
-    # Construire la liste des durées à simuler selon l'input
+    # Build the list of durations to simulate
     dur_min = 15
     dur_max = 25
     loan_duration_list: List[str] = []

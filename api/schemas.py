@@ -67,7 +67,7 @@ class Offer(BaseModel):
 
     bank: str
     loan_duration_in_years: str
-    capital_loaned: str  # TODO: éventuellement float
+    capital_loaned: str
     taux_nominal_fixe: str
     remise: str
     taux_apres_remise: str
