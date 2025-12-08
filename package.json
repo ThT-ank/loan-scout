@@ -1,0 +1,18 @@
+{
+  "name": "loan-scout",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "zellij --layout loan-scout.kdl",
+    "dev:backend": "source server/.venv/bin/activate && python -m uvicorn server.main:app --reload --port 8000",
+    "dev:frontend": "cd react-client && pnpm dev",
+    "install:backend": "cd server && python -m venv .venv && source .venv/bin/activate && pip install -r ../requirements.txt",
+    "install:frontend": "cd react-client && pnpm install",
+    "install": "pnpm install:frontend && pnpm install:backend",
+    "format": "cd react-client && pnpm format",
+    "lint": "cd react-client && pnpm lint",
+    "build": "cd react-client && pnpm build"
+  },
+  "packageManager": "pnpm@10.22.0"
+}

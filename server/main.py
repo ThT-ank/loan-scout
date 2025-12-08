@@ -20,6 +20,12 @@ app.add_middleware(
 )
 
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy", "service": "loan-scout-api"}
+
+
 def _parse_years(years_str: str) -> int:
     """Parse '15 ans' -> 15 (int). Retourne 0 si non-parsable."""
     try:
