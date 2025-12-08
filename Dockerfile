@@ -33,8 +33,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Vérifier les installations
-#RUN google-chrome-stable --version
-#RUN chromedriver --version
+# RUN google-chrome-stable --version
+# RUN chromedriver --version
 
 # Cloner le dépôt GitHub
 ARG GIT_REPO="https://github.com/ThT-ank/loan-scout"

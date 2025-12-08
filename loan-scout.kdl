@@ -11,14 +11,14 @@ layout {
 
     tab name="loan-scout" focus=true {
         pane split_direction="vertical" {
-            pane name="backend" {
+            pane name="Api" {
                 command "pnpm"
-                args "run" "dev:backend"
+                args "run" "dev:api"
                 focus true
             }
-            pane name="frontend" {
+            pane name="Webapp" {
                 command "pnpm"
-                args "run" "dev:frontend"
+                args "run" "dev:webapp"
             }
         }
     }

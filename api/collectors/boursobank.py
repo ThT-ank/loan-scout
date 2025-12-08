@@ -21,7 +21,7 @@ class SimulationInputs:
     frais_notaire: str
 
     @classmethod
-    def default_values(cls):
+    def default_values(cls) -> "SimulationInputs":
         return cls(
             emprunteur1_age="24",
             emprunteur1_revenu="2800",
@@ -36,13 +36,21 @@ class SimulationInputs:
 
 
 BANK_NAME = "Boursobank"  # libellé affiché côté API
-URL = "https://www.boursobank.com/credit/credit-immobilier?origine=2247&at_medium=sl&at_campaign=fr_sea&at_platform=google&at_term=&at_creation=ppi&at_variant=filrouge&origine=2247&at_medium=sl&at_campaign=fr_sea&at_platform=google&at_term=&at_creation=ppi&at_variant=filrouge&gad_source=1&gclid=Cj0KCQiA4fi7BhC5ARIsAEV1YiacKJ_nRth0h6cpsAtw750ZW6IqhC9Vc2BaarwT32sKlQfEapKXS8EaAoEsEALw_wcB#simulateur"
+URL = (
+    "https://www.boursobank.com/credit/credit-immobilier"
+    "?origine=2247&at_medium=sl&at_campaign=fr_sea&at_platform=google&at_term="
+    "&at_creation=ppi&at_variant=filrouge&origine=2247&at_medium=sl"
+    "&at_campaign=fr_sea&at_platform=google&at_term=&at_creation=ppi"
+    "&at_variant=filrouge&gad_source=1&gclid=Cj0KCQiA4fi7BhC5ARIsAEV1YiacKJ_n"
+    "Rth0h6cpsAtw750ZW6IqhC9Vc2BaarwT32sKlQfEapKXS8EaAoEsEALw_wcB#simulateur"
+)
 
 
 class BoursoBankSimulator:
     def __init__(self, input_data: SimulationInputs | None = None):
         self.bank_name = BANK_NAME
         self.input_data = input_data or SimulationInputs.default_values()
+        self.driver: WebDriver
         self._init_driver()
 
     def _init_driver(self):
@@ -124,7 +132,7 @@ class BoursoBankSimulator:
             dict: Résultat normalisé de la simulation
         """
         t0 = time.perf_counter()
-        
+
         try:
             self.driver.get(URL)
 
@@ -147,7 +155,7 @@ class BoursoBankSimulator:
             result_text = self.driver.execute_script("return arguments[0].innerText;", card)
 
             elapsed_ms = int((time.perf_counter() - t0) * 1000)
-        
+
             return {
                 "bank": self.bank_name,
                 "raw_result": result_text,

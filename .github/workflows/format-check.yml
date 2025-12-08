@@ -1,0 +1,15 @@
+name: Format Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  dprint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dprint fmt --check
+        uses: dprint/check@v2
+        with:
+          config-path: dprint.jsonc

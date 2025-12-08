@@ -1,0 +1,9 @@
+{
+	"name": "@loan-scout/api",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "source .venv/bin/activate && python -m uvicorn main:app --reload --port 8000",
+		"lint": "source .venv/bin/activate && pylint . --ignore=.venv --recursive=y"
+	}
+}

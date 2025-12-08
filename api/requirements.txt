@@ -1,0 +1,8 @@
+selenium
+requests
+pandas
+matplotlib
+fastapi
+pylint
+uvicorn
+loguru
